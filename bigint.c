@@ -82,12 +82,19 @@ void bigint_append(bigint * bi, char s)
 }
 
 
-
+void bigint_copy(bigint * bi1, bigint * bi2)
+{
+    bigint_init(bi1);
+    for(int i = bi2->strlen - 1; i >= 0; i--)
+    {
+        bigint_append(bi1, bi2->num[i]);
+    }
+}
 
 void bigint_add(bigint * n3, bigint * n1, bigint * n2)
 {
-
-    bigint_init(n3);
+    bigint temp;
+    bigint_init(&temp);
     
 
 
@@ -138,7 +145,7 @@ void bigint_add(bigint * n3, bigint * n1, bigint * n2)
             carry = 0;
         }
 
-        bigint_append(n3, asii);
+        bigint_append(&temp, asii);
 
 
 
@@ -183,12 +190,12 @@ void bigint_add(bigint * n3, bigint * n1, bigint * n2)
             printf("asii = %d\n", asii);
             #endif
 
-            bigint_append(n3, asii);
+            bigint_append(&temp, asii);
 
         }
         else
         {
-            bigint_append(n3, n1->num[n1_pos]);
+            bigint_append(&temp, n1->num[n1_pos]);
 
             #if 1//測試資訊
             printf("n1.num[n1l] = %c\n", n1->num[n1_pos]);
@@ -217,11 +224,11 @@ void bigint_add(bigint * n3, bigint * n1, bigint * n2)
                 carry = 0;
 
 
-           bigint_append(n3, asii);
+           bigint_append(&temp, asii);
         }
         else
         {
-            bigint_append(n3, n2->num[n2_pos]);
+            bigint_append(&temp, n2->num[n2_pos]);
 
             #if 1//測試資訊
             printf("n2.num[n2_pos] = %c\n", n2->num[n2_pos]);
@@ -238,7 +245,110 @@ void bigint_add(bigint * n3, bigint * n1, bigint * n2)
     //是否有進位
     if((carry == 1))
     {
-        bigint_append(n3, '1');
+        bigint_append(&temp, '1');
     }
 
+
+
+   bigint_copy(n3, &temp);
+
+    free(temp.num);
+
+}
+
+
+
+
+void bigint_dif(bigint * n3, bigint * n1, bigint * n2)
+{
+    bigint temp;
+    bigint_init(&temp);
+    int n1_pos = 0;
+    int n2_pos = 0;
+    char *num1, *num2;
+
+
+    //將較大的數存在num1較小的存在num2
+    if(n1->strlen > n2->strlen)
+    {
+        num1 = n1->num;;
+        num2 = n2->num;
+        n1_pos = n1->strlen - 1;
+        n2_pos = n2->strlen - 1;
+        temp.sign = 0;
+        
+    }
+    else if(n1->strlen == n2->strlen)
+    {
+        int i = n1->strlen - 1;
+        int d = n1->num[i] - n2->num[i];
+        while(d == 0)
+        {
+            i--;
+            d = n1->num[i] - n2->num[i];
+        }
+
+        if(d > 0)
+        {
+            num1 = n1->num;;
+            num2 = n2->num;
+            n1_pos = n1->strlen - 1;
+            n2_pos = n2->strlen - 1;
+            temp.sign = 0;
+        }
+        else
+        {
+            num1 = n2->num;;
+            num2 = n1->num;
+            n1_pos = n2->strlen - 1;
+            n2_pos = n1->strlen - 1;
+            temp.sign = 1;
+        }
+
+    }
+    else
+    {
+        num1 = n2->num;;
+        num2 = n1->num;
+        n1_pos = n2->strlen - 1;
+        n2_pos = n1->strlen - 1;
+        temp.sign = 1;
+    }
+
+    //測試資訊
+    #if 1 
+    printf("n1l = %d\n" , n1->strlen);
+    printf("n2l = %d\n" , n2->strlen);
+    printf("num1 = %s", num1);
+    printf("num2 = %s", num2);
+    #endif
+
+    printf("開始減法----------------------------\n");
+
+    char borrow = 0;
+
+    while((n1_pos >= 0) && (n2_pos >= 0))
+    {
+
+        char asii = (int)n1->num[n1_pos] - (int)n2->num[n2_pos];
+        if(borrow == 1)
+        {
+            asii = asii - 1;
+        }
+        if((int)asii < 0)
+        {
+            borrow = 1;
+            asii = (int)n1->num[n1_pos] - (int)n2->num[n2_pos] + 58;
+        }
+        else
+        {
+            borrow = 0;
+            asii += 48;
+        }
+
+        bigint_append(&temp, asii);
+
+        n1_pos--;
+        n2_pos--;
+    }
 }
