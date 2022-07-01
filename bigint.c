@@ -82,10 +82,10 @@ void bigint_append(bigint * bi, char s)
 }
 
 
-void bigint_copy(bigint * bi1, bigint * bi2)
+void bigint_copy(bigint * bi1, bigint * bi2, int pos)
 {
     bigint_init(bi1);
-    for(int i = bi2->strlen - 1; i >= 0; i--)
+    for(int i = bi2->strlen - 1; i >= pos; i--)
     {
         bigint_append(bi1, bi2->num[i]);
     }
@@ -250,7 +250,7 @@ void bigint_add(bigint * n3, bigint * n1, bigint * n2)
 
 
 
-   bigint_copy(n3, &temp);
+    bigint_copy(n3, &temp, 0);
 
     free(temp.num);
 
@@ -315,15 +315,6 @@ void bigint_dif(bigint * n3, bigint * n1, bigint * n2)
         temp.sign = 1;
     }
 
-    //測試資訊
-    #if 1 
-    printf("n1l = %d\n" , n1->strlen);
-    printf("n2l = %d\n" , n2->strlen);
-    printf("num1 = %s", num1);
-    printf("num2 = %s", num2);
-    #endif
-
-    printf("開始減法----------------------------\n");
 
     char borrow = 0;
 
@@ -351,4 +342,44 @@ void bigint_dif(bigint * n3, bigint * n1, bigint * n2)
         n1_pos--;
         n2_pos--;
     }
+
+    //n1是否已經結束
+    while(n1_pos >= 0)
+    {
+        #if 1 //測試資訊
+        printf("n1_pos = %d\n", n1_pos);
+        #endif
+
+        //是否有低位借位
+        if(borrow == 1)
+        {
+            char asii = (int)n1->num[n1_pos] - 1;
+            printf("asii = %d\n", (int)asii);
+
+            if((int)asii < 48)
+            {
+                borrow = 1;
+                asii += 10;
+            }
+            else
+                borrow = 0;
+
+            bigint_append(&temp, asii);
+            printf("asii = %d\n", (int)asii);
+
+        }
+        else
+        {
+            bigint_append(&temp, n1->num[n1_pos]);
+            printf("asii = %d\n", n1->num[n1_pos]);
+        }
+        n1_pos--;
+    }
+    
+    if(temp.num[0] == 48)
+        bigint_copy(n3, &temp, 1);  
+    else
+        bigint_copy(n3, &temp, 0);
+
+
 }

@@ -20,11 +20,11 @@ int main(){
         printf("input num2 :");
         bigint_input(&str2);
 
-        
-        bigint_add(&str3, &str1, &str2);
+        bigint_dif(&str3, &str1, &str2);
+        //bigint_add(&str3, &str1, &str2);
         //printf("str3len = \n" , strlen(str3.num));
         printf("plus num1 and num2 -> %s , %s\n", str1.num, str2.num);
-        printf("str3 = str1 + str2 -> %s = %s + %s\n" , str3.num, str1.num, str2.num);
+        printf("str3 = str1 - str2 -> %s = %s + %s\n" , str3.num, str1.num, str2.num);
         /*free(str1.num);    
         free(str2.num);
         free(str3.num);

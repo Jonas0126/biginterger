@@ -8,6 +8,7 @@ struct bigint
     int strlen;
     int expendlen;//每次分配長度
     int maxlen;//最大長度
+    int sign;//0 = 正, 1 = 負
 };
 
 int bigint_input(bigint * bi);//輸入一個bigint
@@ -18,4 +19,6 @@ void bigint_add(bigint * n3, bigint * n1, bigint * n2);//相加bigint n1+n2=n3
 
 void bigint_append(bigint * bi, char s);
 
-void bigint_copy(bigint * bi1, bigint * bi2);//copy num form bi2 to bi1
+void bigint_copy(bigint * bi1, bigint * bi2, int pos);//copy num form bi2 to bi1
+
+void bigint_dif(bigint * n3, bigint * n1, bigint * n2);// differ n1 - n2 = n3
